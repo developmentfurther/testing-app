@@ -4,6 +4,10 @@ import { testResendEmail } from "@/lib/test-web-email";
 import { testAcademyChat } from "@/lib/test-academy-chat";
 import { testExamsEvaluate } from "@/lib/test-exams-evaluate";
 import { testWhatsappExtraction } from "@/lib/test-whatsapp-extraction";
+import { testEnglishBooster } from "@/lib/test-english-booster";
+import { testConversationalClub } from "@/lib/test-conversational-chat";
+
+
 
 const TESTS = [
   { id: "campus-chat", fn: testCampusChat },
@@ -12,6 +16,9 @@ const TESTS = [
   { id: "academy-chat", fn: testAcademyChat },
   { id: "exams-evaluate", fn: testExamsEvaluate },
   { id: "whatsapp-extraction", fn: testWhatsappExtraction },
+  { id: "english-booster-registration", fn: testEnglishBooster },
+  { id: "conversational-club", fn: testConversationalClub },
+
 ];
 
 export async function runAllTests() {

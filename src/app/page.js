@@ -14,6 +14,9 @@ import { testResendEmail } from '@/lib/test-web-email';
 import { testAcademyChat } from '@/lib/test-academy-chat';
 import { testExamsEvaluate } from '@/lib/test-exams-evaluate';
 import { testWhatsappExtraction } from '@/lib/test-whatsapp-extraction';
+import { testEnglishBooster } from '@/lib/test-english-booster';
+import { testConversationalClub } from "@/lib/test-conversational-chat";
+
 
 // --- CONFIGURACIÓN DE LA UI ---
 const COLORS = {
@@ -87,6 +90,21 @@ export default function Dashboard() {
       icon: <IconWhatsapp />,
       fn: testWhatsappExtraction
     },
+    {
+  id: 'english-booster',
+  title: 'English Booster Registration',
+  description: 'Valida generación de JSON register_user y webhook n8n.',
+  icon: <IconBot />,
+  fn: testEnglishBooster
+},
+{
+  id: 'conversational-club',
+  title: 'Conversational Club Registration',
+  description: 'Valida generación de JSON register_user y webhook n8n.',
+  icon: <IconBot />,
+  fn: testConversationalClub
+},
+    
   ];
 
   const runTest = async (test) => {
