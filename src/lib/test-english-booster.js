@@ -7,7 +7,7 @@ import OpenAI from "openai";
 -------------------------------------------- */
 
 const apiKey = process.env.API_WEB;
-const N8N_WEBHOOK_URL_ENGLISH = process.env.N8N_WEBHOOK_URL_CONVERSATIONAL_ENGLISH;
+const N8N_WEBHOOK_URL_ENGLISH = process.env.N8N_WEBHOOK_URL_ENGLISH;
 
 const MODEL = "gpt-4o-mini";
 

@@ -62,6 +62,14 @@ export async function runAllTests() {
 
   const allPassed = normalized.every((t) => t.success);
 
+  const failedTests = normalized.filter(t => !t.success);
+
+const failedTestIds = failedTests.map(t => t.id);
+
+const failureDetails = failedTests.map(t =>
+  `${t.id} → ${t.message}`
+);
+
   return {
     runId: `run_${Date.now()}`,
     startedAt: new Date(startedAt).toISOString(),
@@ -72,7 +80,11 @@ export async function runAllTests() {
       total: normalized.length,
       passed: normalized.filter(t => t.success).length,
       failed: normalized.filter(t => !t.success).length,
+      
     },
+    failedTestIds,
+failureDetails,
+
     results: normalized,
   };
 }
