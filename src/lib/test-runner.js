@@ -7,9 +7,17 @@ import { testWhatsappExtraction } from "@/lib/test-whatsapp-extraction";
 import { testEnglishBooster } from "@/lib/test-english-booster";
 import { testConversationalClub } from "@/lib/test-conversational-chat";
 
-
+// ─── Landings ─────────────────────────────────────────────────────────────────
+import { testLandingEgger } from "@/lib/test-landing-egger";
+import { testLandingKopius } from "@/lib/test-landing-kopius";
+import { testLandingBoca } from "@/lib/test-landing-boca";
+import { testLandingAccenture } from "@/lib/test-landing-accenture";
+import { testLandingAdmCentral } from "@/lib/test-landing-adm-central";
+import { testLandingFaroVerde } from "@/lib/test-landing-faro-verde";
+import { testLandingElCronista } from "@/lib/test-landing-el-cronista";
 
 const TESTS = [
+  // ── Apps core ──────────────────────────────────────────────────────────────
   { id: "campus-chat", fn: testCampusChat },
   { id: "web-chatbot", fn: testWebChatbot },
   { id: "testResendEmail", fn: testResendEmail },
@@ -19,6 +27,14 @@ const TESTS = [
   { id: "english-booster-registration", fn: testEnglishBooster },
   { id: "conversational-club", fn: testConversationalClub },
 
+  // ── Landings ───────────────────────────────────────────────────────────────
+  { id: "landing-egger", fn: testLandingEgger },
+  { id: "landing-kopius", fn: testLandingKopius },
+  { id: "landing-boca", fn: testLandingBoca },
+  { id: "landing-accenture", fn: testLandingAccenture },
+  { id: "landing-adm-central", fn: testLandingAdmCentral },
+  { id: "landing-faro-verde", fn: testLandingFaroVerde },
+  { id: "landing-el-cronista", fn: testLandingElCronista },
 ];
 
 export async function runAllTests() {
@@ -51,24 +67,21 @@ export async function runAllTests() {
   );
 
   const normalized = results.map((r) =>
-    r.status === "fulfilled" ? r.value : {
-      id: "unknown",
-      success: false,
-      message: "Promise rejected",
-      durationMs: 0,
-      meta: r.reason,
-    }
+    r.status === "fulfilled"
+      ? r.value
+      : {
+          id: "unknown",
+          success: false,
+          message: "Promise rejected",
+          durationMs: 0,
+          meta: r.reason,
+        }
   );
 
   const allPassed = normalized.every((t) => t.success);
-
-  const failedTests = normalized.filter(t => !t.success);
-
-const failedTestIds = failedTests.map(t => t.id);
-
-const failureDetails = failedTests.map(t =>
-  `${t.id} → ${t.message}`
-);
+  const failedTests = normalized.filter((t) => !t.success);
+  const failedTestIds = failedTests.map((t) => t.id);
+  const failureDetails = failedTests.map((t) => `${t.id} → ${t.message}`);
 
   return {
     runId: `run_${Date.now()}`,
@@ -78,13 +91,11 @@ const failureDetails = failedTests.map(t =>
     allPassed,
     summary: {
       total: normalized.length,
-      passed: normalized.filter(t => t.success).length,
-      failed: normalized.filter(t => !t.success).length,
-      
+      passed: normalized.filter((t) => t.success).length,
+      failed: normalized.filter((t) => !t.success).length,
     },
     failedTestIds,
-failureDetails,
-
+    failureDetails,
     results: normalized,
   };
 }

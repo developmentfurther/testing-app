@@ -17,11 +17,20 @@ import { testWhatsappExtraction } from '@/lib/test-whatsapp-extraction';
 import { testEnglishBooster } from '@/lib/test-english-booster';
 import { testConversationalClub } from "@/lib/test-conversational-chat";
 
+// --- LANDINGS ---
+import { testLandingEgger } from '@/lib/testLandingEgger';
+import { testLandingKopius } from '@/lib/testLandingKopius';
+import { testLandingBoca } from '@/lib/testLandingBoca';
+import { testLandingAccenture } from '@/lib/testLandingAccenture';
+import { testLandingAdmCentral } from '@/lib/testLandingAdmCentral';
+import { testLandingFaroVerde } from '@/lib/testLandingFaroVerde';
+import { testLandingElCronista } from '@/lib/testLandingElCronista';
+
 
 // --- CONFIGURACIÓN DE LA UI ---
 const COLORS = {
-  primary: "bg-[#0C212D]", // Azul Oscuro Further
-  accent: "bg-[#EE7203]",  // Naranja Further
+  primary: "bg-[#0C212D]",
+  accent: "bg-[#EE7203]",
   success: "text-emerald-600 bg-emerald-50 border-emerald-200",
   error: "text-red-600 bg-red-50 border-red-200",
   neutral: "text-slate-600 bg-slate-50 border-slate-200",
@@ -33,21 +42,14 @@ export default function Dashboard() {
 
   const router = useRouter()
 
-  // --- LÓGICA DE LOGOUT ---
   const handleLogout = async () => {
-    // 1. Cerramos sesión en Firebase (Limpia el cliente)
     await signOut(auth);
-    
-    // 2. Cerramos sesión en el Servidor (Borra la cookie 2FA)
     await logoutAction();
-    
-    // 3. Nos vamos al login
     router.push('/login');
-    router.refresh(); // Asegura que se limpie cualquier caché de ruta
+    router.refresh();
   };
 
-  // Definición de las tarjetas de prueba
-  const TESTS = [
+  const TESTS_CORE = [
     {
       id: 'campus',
       title: 'Campus Tutor AI',
@@ -91,25 +93,75 @@ export default function Dashboard() {
       fn: testWhatsappExtraction
     },
     {
-  id: 'english-booster',
-  title: 'English Booster Registration',
-  description: 'Valida generación de JSON register_user y webhook n8n.',
-  icon: <IconBot />,
-  fn: testEnglishBooster
-},
-{
-  id: 'conversational-club',
-  title: 'Conversational Club Registration',
-  description: 'Valida generación de JSON register_user y webhook n8n.',
-  icon: <IconBot />,
-  fn: testConversationalClub
-},
-    
+      id: 'english-booster',
+      title: 'English Booster Registration',
+      description: 'Valida generación de JSON register_user y webhook n8n.',
+      icon: <IconBot />,
+      fn: testEnglishBooster
+    },
+    {
+      id: 'conversational-club',
+      title: 'Conversational Club Registration',
+      description: 'Valida generación de JSON register_user y webhook n8n.',
+      icon: <IconBot />,
+      fn: testConversationalClub
+    },
+  ];
+
+  const TESTS_LANDINGS = [
+    {
+      id: 'landing-egger',
+      title: 'Landing · Egger',
+      description: 'Webhook N8N · Idioma libre · Con experienciaIdioma · Con deduplicación.',
+      icon: <IconLanding />,
+      fn: testLandingEgger
+    },
+    {
+      id: 'landing-kopius',
+      title: 'Landing · Kopius',
+      description: 'Webhook N8N · Idioma libre · Con experienciaIdioma · Con deduplicación.',
+      icon: <IconLanding />,
+      fn: testLandingKopius
+    },
+    {
+      id: 'landing-boca',
+      title: 'Landing · Boca',
+      description: 'Webhook N8N · English fijo · Sin experienciaIdioma · Con deduplicación.',
+      icon: <IconLanding />,
+      fn: testLandingBoca
+    },
+    {
+      id: 'landing-accenture',
+      title: 'Landing · Accenture',
+      description: 'Webhook N8N · Idioma libre · Con experienciaIdioma · Con deduplicación.',
+      icon: <IconLanding />,
+      fn: testLandingAccenture
+    },
+    {
+      id: 'landing-adm-central',
+      title: 'Landing · Adm Central',
+      description: 'Webhook N8N · Solo EN/PT · Con experienciaIdioma · Con deduplicación.',
+      icon: <IconLanding />,
+      fn: testLandingAdmCentral
+    },
+    {
+      id: 'landing-faro-verde',
+      title: 'Landing · Faro Verde',
+      description: 'Webhook N8N · Idioma libre · Con campo unidad · Sin deduplicación.',
+      icon: <IconLanding />,
+      fn: testLandingFaroVerde
+    },
+    {
+      id: 'landing-el-cronista',
+      title: 'Landing · El Cronista',
+      description: 'Webhook N8N · English fijo · Máquina de estados · Sin deduplicación.',
+      icon: <IconLanding />,
+      fn: testLandingElCronista
+    },
   ];
 
   const runTest = async (test) => {
     setLoadingId(test.id);
-    // Limpiamos resultado previo
     setResults((prev) => ({ ...prev, [test.id]: null }));
 
     try {
@@ -119,7 +171,7 @@ export default function Dashboard() {
 
       setResults((prev) => ({
         ...prev,
-        [test.id]: { ...response, duration } // Guardamos respuesta + tiempo
+        [test.id]: { ...response, duration }
       }));
     } catch (error) {
       setResults((prev) => ({
@@ -131,14 +183,77 @@ export default function Dashboard() {
     }
   };
 
+  const TestCard = ({ test }) => {
+    const result = results[test.id];
+    const isLoading = loadingId === test.id;
+
+    return (
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow duration-300 flex flex-col">
+        <div className="p-6 flex-1">
+          <div className="flex items-start justify-between mb-4">
+            <div className="p-3 rounded-xl bg-slate-100 text-slate-700">
+              {test.icon}
+            </div>
+            {result && (
+              <span className={`text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wide border ${result.success ? COLORS.success : COLORS.error}`}>
+                {result.success ? 'PASSED' : 'FAILED'}
+              </span>
+            )}
+          </div>
+
+          <h3 className="font-bold text-lg text-slate-900 mb-2">{test.title}</h3>
+          <p className="text-sm text-slate-500 leading-relaxed">{test.description}</p>
+        </div>
+
+        {result && (
+          <div className="border-t border-slate-100 bg-slate-50/50 p-4 text-xs">
+            <div className="flex justify-between items-center mb-2">
+              <span className="font-semibold text-slate-700">Resultado:</span>
+              <span className="text-slate-400">{result.duration}ms</span>
+            </div>
+            <p className={`mb-2 font-medium ${result.success ? 'text-emerald-600' : 'text-red-600'}`}>
+              {result.message}
+            </p>
+            <details className="group">
+              <summary className="cursor-pointer text-slate-400 hover:text-[#EE7203] transition-colors list-none flex items-center gap-1 font-medium select-none">
+                <span className="group-open:rotate-90 transition-transform">›</span> Ver JSON Técnico
+              </summary>
+              <pre className="mt-2 p-3 bg-slate-900 text-emerald-400 rounded-lg overflow-x-auto font-mono leading-tight">
+                {JSON.stringify(result, null, 2)}
+              </pre>
+            </details>
+          </div>
+        )}
+
+        <div className="p-4 border-t border-slate-100 bg-white">
+          <button
+            onClick={() => runTest(test)}
+            disabled={loadingId !== null}
+            className={`w-full py-2.5 rounded-xl font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2
+              ${isLoading
+                ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                : 'bg-slate-900 text-white hover:bg-[#EE7203] hover:shadow-lg hover:shadow-orange-500/20 active:scale-[0.98]'
+              }
+            `}
+          >
+            {isLoading ? (
+              <><IconLoader className="animate-spin h-4 w-4" /> Ejecutando...</>
+            ) : (
+              <>Ejecutar Test</>
+            )}
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-20">
-      
-      {/* HEADER CORPORATIVO */}
+
+      {/* HEADER */}
       <header className={`${COLORS.primary} text-white py-6 shadow-lg`}>
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-3">
-            {/* Logo Simulado */}
             <div className={`h-10 w-10 rounded-lg ${COLORS.accent} flex items-center justify-center font-bold text-xl`}>
               F
             </div>
@@ -149,11 +264,8 @@ export default function Dashboard() {
               </p>
             </div>
           </div>
-          
-          {/* Lado Derecho: Estado y Logout */}
+
           <div className="flex items-center gap-6">
-            
-            {/* Indicador de Estado */}
             <div className="hidden md:flex items-center gap-2 text-xs bg-white/5 px-3 py-1.5 rounded-full border border-white/10 backdrop-blur-sm">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -162,102 +274,50 @@ export default function Dashboard() {
               <span className="text-slate-200">System Operational</span>
             </div>
 
-            {/* BOTÓN DE LOGOUT */}
-            <button 
+            <button
               onClick={handleLogout}
               className="text-xs font-semibold text-slate-400 hover:text-white transition-colors flex items-center gap-2 group"
             >
               <span>Cerrar Sesión</span>
-              <svg 
-                className="w-4 h-4 text-slate-500 group-hover:text-[#EE7203] transition-colors" 
-                fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"
-              >
+              <svg className="w-4 h-4 text-slate-500 group-hover:text-[#EE7203] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
             </button>
-
           </div>
-        
         </div>
       </header>
 
-      {/* GRID DE TARJETAS */}
-      <main className="max-w-7xl mx-auto px-6 mt-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {TESTS.map((test) => {
-            const result = results[test.id];
-            const isLoading = loadingId === test.id;
-            
-            return (
-              <div 
-                key={test.id} 
-                className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow duration-300 flex flex-col"
-              >
-                {/* Card Header */}
-                <div className="p-6 flex-1">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className={`p-3 rounded-xl bg-slate-100 text-slate-700`}>
-                      {test.icon}
-                    </div>
-                    {result && (
-                      <span className={`text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wide border ${result.success ? COLORS.success : COLORS.error}`}>
-                        {result.success ? 'PASSED' : 'FAILED'}
-                      </span>
-                    )}
-                  </div>
-                  
-                  <h3 className="font-bold text-lg text-slate-900 mb-2">{test.title}</h3>
-                  <p className="text-sm text-slate-500 leading-relaxed">{test.description}</p>
-                </div>
+      <main className="max-w-7xl mx-auto px-6 mt-10 space-y-12">
 
-                {/* Result Area (Collapsible) */}
-                {result && (
-                  <div className="border-t border-slate-100 bg-slate-50/50 p-4 text-xs">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="font-semibold text-slate-700">Resultado:</span>
-                      <span className="text-slate-400">{result.duration}ms</span>
-                    </div>
-                    <p className={`mb-2 font-medium ${result.success ? 'text-emerald-600' : 'text-red-600'}`}>
-                      {result.message}
-                    </p>
-                    
-                    {/* JSON Viewer Simple */}
-                    <details className="group">
-                      <summary className="cursor-pointer text-slate-400 hover:text-[#EE7203] transition-colors list-none flex items-center gap-1 font-medium select-none">
-                        <span className="group-open:rotate-90 transition-transform">›</span> Ver JSON Técnico
-                      </summary>
-                      <pre className="mt-2 p-3 bg-slate-900 text-emerald-400 rounded-lg overflow-x-auto font-mono leading-tight">
-                        {JSON.stringify(result, null, 2)}
-                      </pre>
-                    </details>
-                  </div>
-                )}
+        {/* SECCIÓN: CORE APPS */}
+        <section>
+          <div className="mb-6">
+            <h2 className="text-lg font-bold text-slate-900">Core Apps</h2>
+            <p className="text-sm text-slate-400 mt-0.5">Servicios principales de la plataforma Further.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {TESTS_CORE.map((test) => <TestCard key={test.id} test={test} />)}
+          </div>
+        </section>
 
-                {/* Card Footer / Action */}
-                <div className="p-4 border-t border-slate-100 bg-white">
-                  <button
-                    onClick={() => runTest(test)}
-                    disabled={loadingId !== null}
-                    className={`w-full py-2.5 rounded-xl font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2
-                      ${isLoading 
-                        ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
-                        : 'bg-slate-900 text-white hover:bg-[#EE7203] hover:shadow-lg hover:shadow-orange-500/20 active:scale-[0.98]'
-                      }
-                    `}
-                  >
-                    {isLoading ? (
-                      <>
-                        <IconLoader className="animate-spin h-4 w-4" /> Ejecutando...
-                      </>
-                    ) : (
-                      <>Ejecutar Test</>
-                    )}
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        {/* DIVIDER */}
+        <div className="border-t border-slate-200" />
+
+        {/* SECCIÓN: LANDINGS */}
+        <section>
+          <div className="mb-6">
+            <h2 className="text-lg font-bold text-slate-900">Landings · Registro Corporativo</h2>
+            <p className="text-sm text-slate-400 mt-0.5">
+              Valida el webhook de N8N de cada landing. Los datos se guardan en la hoja{' '}
+              <span className="font-mono bg-slate-100 px-1 py-0.5 rounded text-slate-600">testing automatico</span>{' '}
+              de cada sheet, sin contaminar la data real.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {TESTS_LANDINGS.map((test) => <TestCard key={test.id} test={test} />)}
+          </div>
+        </section>
+
       </main>
 
       {/* FOOTER */}
@@ -269,7 +329,7 @@ export default function Dashboard() {
   );
 }
 
-// --- ICONOS SVG SIMPLES (Para no instalar librerías extra) ---
+// --- ICONOS ---
 
 function IconBrain(props) {
   return <svg {...props} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/></svg>
@@ -295,6 +355,10 @@ function IconWhatsapp(props) {
   return <svg {...props} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16.5 12a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z"/><path d="M8 12a2 2 0 1 0 4 0"/></svg>
 }
 
+function IconLanding(props) {
+  return <svg {...props} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+}
+
 function IconLoader(props) {
-    return <svg {...props} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+  return <svg {...props} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
 }
